@@ -1,4 +1,9 @@
 export default function Footer() {
+    const socialLinks = [
+        { name: 'LinkedIn', url: 'https://www.linkedin.com/in/rohan-vernekar-131595284/' },
+        { name: 'Instagram', url: 'https://www.instagram.com/rohan__mv_/' },
+        { name: 'Github', url: 'https://github.com/ROHAN-M-V' }
+    ];
     return (
         <footer id="contact" className="relative py-20 md:py-32 bg-[#050505] text-[#e0e0e0] overflow-hidden flex flex-col justify-between min-h-[80vh]">
             <div className="absolute inset-0 z-0 pointer-events-none opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
@@ -16,10 +21,16 @@ export default function Footer() {
                 <div className="flex flex-col md:flex-row gap-10 mt-20 md:mt-32 w-full justify-between items-start md:items-end font-sans">
                     <div className="flex flex-col gap-2">
                         <p className="text-zinc-500 font-alt tracking-widest uppercase text-xs mb-2">Socials</p>
-                        {['LinkedIn', 'Instagram', 'Github'].map((link) => (
-                            <a key={link} href="github.com" className="text-lg hover-target hover:text-white transition-colors duration-300 w-max group relative overflow-hidden">
-                                <span className="inline-block transition-transform duration-300 group-hover:-translate-y-[100%]">{link}</span>
-                                <span className="absolute left-0 top-0 translate-y-[100%] inline-block transition-transform duration-300 group-hover:translate-y-0">{link}</span>
+                        {socialLinks.map((link) => (
+                            <a
+                                key={link.name}
+                                href={link.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-lg hover-target hover:text-white transition-colors duration-300 w-max group relative overflow-hidden"
+                            >
+                                <span className="inline-block transition-transform duration-300 group-hover:-translate-y-[100%]">{link.name}</span>
+                                <span className="absolute left-0 top-0 translate-y-[100%] inline-block transition-transform duration-300 group-hover:translate-y-0">{link.name}</span>
                             </a>
                         ))}
 
@@ -40,6 +51,7 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
+
 
             <div className="px-6 md:px-10 mt-20 flex justify-between items-end z-10 font-alt text-xs uppercase tracking-widest text-zinc-600">
                 <p>© {new Date().getFullYear()} STUDIO. ALL RIGHTS RESERVED.</p>
