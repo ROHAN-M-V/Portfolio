@@ -1,7 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-import { playAmbientHum, playBurst } from '../utils/sounds';
-
 const PHRASES = [
     'Chasing pixels...',
     'Painting the web...',
@@ -19,21 +17,25 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
     const [started, setStarted] = useState(false);
     const [phraseIndex, setPhraseIndex] = useState(0);
     const [phase, setPhase] = useState<'loading' | 'burst' | 'done'>('loading');
-    const stopHumRef = useRef<(() => void) | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const isMobile = useMemo(() => window.innerWidth < 768, []);
 
-    // start ambient hum only after user clicks
+    // Initialize audio
+    useEffect(() => {
+        audioRef.current = new Audio('/loader-audio.mp3');
+        audioRef.current.load();
+    }, []);
+
+    // Play user's cinematic riser MP3 on start
     useEffect(() => {
         if (!started) return;
-        stopHumRef.current = playAmbientHum();
-        return () => stopHumRef.current?.();
+        if (audioRef.current) {
+            audioRef.current.play().catch(console.error);
+        }
     }, [started]);
 
     const handleComplete = useCallback(() => {
-        // stop hum, play burst
-        stopHumRef.current?.();
-        playBurst();
         // start the burst grow phase
         setPhase('burst');
         // after black hole grows → flash → done

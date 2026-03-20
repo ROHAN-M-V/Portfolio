@@ -17,8 +17,8 @@ export default function About() {
       <div className="px-6 md:px-10 grid grid-cols-1 md:grid-cols-12 gap-10 relative z-10">
         <div className="md:col-span-5">
           <motion.h2
-            style={{ x }}
-            className="font-display text-5xl md:text-[8vw] leading-[0.85] font-bold uppercase tracking-tighter mix-blend-difference"
+            style={{ x, willChange: 'transform' }}
+            className="font-display text-5xl md:text-[8vw] leading-[0.85] font-bold uppercase tracking-tighter"
           >
             Digital<br />Crafter.
           </motion.h2>
