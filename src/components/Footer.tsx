@@ -16,12 +16,13 @@ export default function Footer() {
                 <div className="flex flex-col md:flex-row gap-10 mt-20 md:mt-32 w-full justify-between items-start md:items-end font-sans">
                     <div className="flex flex-col gap-2">
                         <p className="text-zinc-500 font-alt tracking-widest uppercase text-xs mb-2">Socials</p>
-                        {['Twitter', 'LinkedIn', 'Instagram', 'Github'].map((link) => (
-                            <a key={link} href="#" className="text-lg hover-target hover:text-white transition-colors duration-300 w-max group relative overflow-hidden">
+                        {['LinkedIn', 'Instagram', 'Github'].map((link) => (
+                            <a key={link} href="github.com" className="text-lg hover-target hover:text-white transition-colors duration-300 w-max group relative overflow-hidden">
                                 <span className="inline-block transition-transform duration-300 group-hover:-translate-y-[100%]">{link}</span>
                                 <span className="absolute left-0 top-0 translate-y-[100%] inline-block transition-transform duration-300 group-hover:translate-y-0">{link}</span>
                             </a>
                         ))}
+
                     </div>
 
                     <div className="flex flex-col gap-2 md:text-right">

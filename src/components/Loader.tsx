@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { playAmbientHum, playBurst } from '../utils/sounds';
 
 const PHRASES = [
@@ -20,6 +20,8 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
     const [phraseIndex, setPhraseIndex] = useState(0);
     const [phase, setPhase] = useState<'loading' | 'burst' | 'done'>('loading');
     const stopHumRef = useRef<(() => void) | null>(null);
+
+    const isMobile = useMemo(() => window.innerWidth < 768, []);
 
     // start ambient hum only after user clicks
     useEffect(() => {
@@ -58,6 +60,20 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
     }, [started, handleComplete]);
 
     const progress = Math.min(((phraseIndex + 1) / PHRASES.length) * 100, 100);
+
+    // Simplified orbiting particles config — fewer on mobile
+    const orbitRings = useMemo(() => {
+        const rings = [
+            { size: '100%', dur: 6, delay: 0, dotSize: 'w-1.5 h-1.5', glow: '0_0_8px_rgba(200,180,255,0.8)' },
+            { size: '78%', dur: 4, delay: 0.5, dotSize: 'w-1 h-1', glow: '0_0_6px_rgba(255,255,255,0.6)' },
+        ];
+        if (!isMobile) {
+            rings.push({ size: '56%', dur: 2.5, delay: 1, dotSize: 'w-1 h-1', glow: '0_0_6px_rgba(180,160,255,0.7)' });
+        }
+        return rings;
+    }, [isMobile]);
+
+    const burstScale = isMobile ? [1, 1.05, 1.15, 1.5, 5] : [1, 1.05, 1.15, 1.5, 8];
 
     return (
         <AnimatePresence>
@@ -124,8 +140,9 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
                     {/* ── black hole ── */}
                     <motion.div
                         className="relative w-44 h-44 md:w-56 md:h-56 mb-14"
+                        style={{ willChange: 'transform' }}
                         animate={{
-                            scale: phase === 'burst' ? [1, 1.05, 1.15, 1.5, 8] : 1,
+                            scale: phase === 'burst' ? burstScale : 1,
                             rotate: phase === 'burst' ? [0, 0, 5, 30, 90] : 0,
                         }}
                         transition={{
@@ -139,6 +156,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
                             className="absolute inset-[-20%] rounded-full"
                             style={{
                                 background: 'radial-gradient(circle, rgba(160,120,255,0.12) 0%, rgba(80,60,180,0.06) 40%, transparent 70%)',
+                                willChange: 'transform, opacity',
                             }}
                             animate={{
                                 scale: phase === 'burst' ? [1, 2] : [1, 1.15, 1],
@@ -151,59 +169,44 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
                             }}
                         />
 
-                        {/* ring 1 — outer, slow */}
-                        <motion.div
-                            className="absolute inset-0 rounded-full border border-zinc-700/40"
-                            animate={{
-                                rotate: 360,
-                                scale: phase === 'burst' ? [1, 0] : 1,
-                                opacity: phase === 'burst' ? [1, 0] : 1,
+                        {/* ring 1 — outer, slow — CSS animation for GPU compositing */}
+                        <div
+                            className="absolute inset-0 rounded-full border border-zinc-700/40 animate-spin-slow"
+                            style={{
+                                borderWidth: '1px',
+                                borderStyle: 'dashed',
+                                willChange: 'transform',
+                                opacity: phase === 'burst' ? 0 : 1,
+                                transition: 'opacity 0.6s',
                             }}
-                            transition={{
-                                rotate: { repeat: Infinity, duration: 12, ease: 'linear' },
-                                scale: { duration: 0.6 },
-                                opacity: { duration: 0.6 },
-                            }}
-                            style={{ borderWidth: '1px', borderStyle: 'dashed' }}
                         />
 
                         {/* ring 2 — mid, opposite direction */}
-                        <motion.div
+                        <div
                             className="absolute inset-[14%] rounded-full border border-zinc-600/30"
-                            animate={{
-                                rotate: -360,
-                                scale: phase === 'burst' ? [1, 0] : 1,
-                                opacity: phase === 'burst' ? [1, 0] : 1,
-                            }}
-                            transition={{
-                                rotate: { repeat: Infinity, duration: 8, ease: 'linear' },
-                                scale: { duration: 0.5, delay: 0.1 },
-                                opacity: { duration: 0.5, delay: 0.1 },
+                            style={{
+                                animation: 'spin 8s linear infinite reverse',
+                                willChange: 'transform',
+                                opacity: phase === 'burst' ? 0 : 1,
+                                transition: 'opacity 0.5s 0.1s',
                             }}
                         />
 
                         {/* ring 3 — inner, fast */}
-                        <motion.div
+                        <div
                             className="absolute inset-[28%] rounded-full border border-zinc-500/20"
-                            animate={{
-                                rotate: 360,
-                                scale: phase === 'burst' ? [1, 0] : 1,
-                                opacity: phase === 'burst' ? [1, 0] : 1,
+                            style={{
+                                borderWidth: '1px',
+                                borderStyle: 'dotted',
+                                animation: 'spin 4s linear infinite',
+                                willChange: 'transform',
+                                opacity: phase === 'burst' ? 0 : 1,
+                                transition: 'opacity 0.4s 0.2s',
                             }}
-                            transition={{
-                                rotate: { repeat: Infinity, duration: 4, ease: 'linear' },
-                                scale: { duration: 0.4, delay: 0.2 },
-                                opacity: { duration: 0.4, delay: 0.2 },
-                            }}
-                            style={{ borderWidth: '1px', borderStyle: 'dotted' }}
                         />
 
                         {/* orbiting particles */}
-                        {[
-                            { size: '100%', dur: 6, delay: 0, dotSize: 'w-1.5 h-1.5', glow: '0_0_8px_rgba(200,180,255,0.8)' },
-                            { size: '78%', dur: 4, delay: 0.5, dotSize: 'w-1 h-1', glow: '0_0_6px_rgba(255,255,255,0.6)' },
-                            { size: '56%', dur: 2.5, delay: 1, dotSize: 'w-1 h-1', glow: '0_0_6px_rgba(180,160,255,0.7)' },
-                        ].map((ring, i) => (
+                        {orbitRings.map((ring, i) => (
                             <motion.div
                                 key={i}
                                 className="absolute rounded-full"
@@ -212,6 +215,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
                                     height: ring.size,
                                     top: `${(100 - parseFloat(ring.size)) / 2}%`,
                                     left: `${(100 - parseFloat(ring.size)) / 2}%`,
+                                    willChange: 'transform',
                                 }}
                                 animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
                                 transition={{ repeat: Infinity, duration: ring.dur, ease: 'linear', delay: ring.delay }}
@@ -229,6 +233,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
                             style={{
                                 background: 'radial-gradient(circle, #000 40%, rgba(0,0,0,0.9) 60%, rgba(20,10,40,0.4) 80%, transparent 100%)',
                                 boxShadow: 'inset 0 0 30px rgba(0,0,0,1), 0 0 40px rgba(100,70,200,0.15)',
+                                willChange: 'transform',
                             }}
                             animate={{
                                 scale: phase === 'burst' ? [1, 1.5, 3] : 1,
@@ -245,6 +250,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
                             style={{
                                 border: '1px solid rgba(180,160,255,0.15)',
                                 boxShadow: '0 0 20px rgba(140,100,255,0.08), inset 0 0 20px rgba(140,100,255,0.05)',
+                                willChange: 'transform, opacity',
                             }}
                             animate={{
                                 scale: phase === 'burst' ? [1, 2] : [1, 1.06, 1],

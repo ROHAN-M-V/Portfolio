@@ -1,5 +1,5 @@
 import { motion, useTransform, useSpring } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 
 const projects = [
     {
@@ -29,6 +29,10 @@ export default function Projects() {
     const container = useRef(null);
     const [modal, setModal] = useState({ active: false, index: 0 });
 
+    const isMobile = useMemo(() => {
+        return window.innerWidth < 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    }, []);
+
     return (
         <section ref={container} id="works" className="relative py-32 bg-[#050505] text-[#e0e0e0]">
             <div className="px-6 md:px-10 mb-20 flex justify-between items-end border-b border-zinc-800 pb-10">
@@ -45,8 +49,8 @@ export default function Projects() {
                     <div
                         key={index}
                         className="w-full flex justify-between items-center px-6 md:px-20 py-10 md:py-16 border-b border-zinc-800 group cursor-pointer hover-target transition-all duration-500 hover:bg-zinc-900"
-                        onMouseEnter={() => setModal({ active: true, index })}
-                        onMouseLeave={() => setModal({ active: false, index })}
+                        onMouseEnter={isMobile ? undefined : () => setModal({ active: true, index })}
+                        onMouseLeave={isMobile ? undefined : () => setModal({ active: false, index })}
                     >
                         <h2 className="text-5xl md:text-8xl font-display uppercase tracking-tighter m-0 font-bold group-hover:-translate-x-4 transition-transform duration-500 text-white">
                             {project.title}
@@ -63,7 +67,8 @@ export default function Projects() {
                 ))}
             </div>
 
-            <ProjectModal modal={modal} projects={projects} />
+            {/* Only render the cursor-following modal on desktop */}
+            {!isMobile && <ProjectModal modal={modal} projects={projects} />}
         </section>
     );
 }
@@ -72,19 +77,19 @@ function ProjectModal({ modal, projects }: { modal: any, projects: any[] }) {
     const { active, index } = modal;
     const modalContainer = useRef(null);
 
-    // Custom cursor movement for modal
     const springConfig = { damping: 28, stiffness: 400, mass: 0.5 };
 
     const springX = useSpring(0, springConfig);
     const springY = useSpring(0, springConfig);
 
     useEffect(() => {
+        // Only listen for mousemove when modal is relevant
         const moveModal = (e: MouseEvent) => {
             springX.set(e.clientX);
             springY.set(e.clientY);
         };
 
-        window.addEventListener('mousemove', moveModal);
+        window.addEventListener('mousemove', moveModal, { passive: true });
         return () => {
             window.removeEventListener('mousemove', moveModal);
         };
@@ -98,7 +103,8 @@ function ProjectModal({ modal, projects }: { modal: any, projects: any[] }) {
             animate={{ scale: active ? 1 : 0 }}
             style={{
                 x: useTransform(springX, value => value - 200),
-                y: useTransform(springY, value => value - 150)
+                y: useTransform(springY, value => value - 150),
+                willChange: 'transform',
             }}
             transition={{ type: "tween", ease: "backOut", duration: 0.5 }}
         >
@@ -110,7 +116,8 @@ function ProjectModal({ modal, projects }: { modal: any, projects: any[] }) {
                     <div key={i} className="h-full w-full flex items-center justify-center relative">
                         <img
                             src={project.img}
-                            alt="project"
+                            alt={project.title}
+                            loading="lazy"
                             className="w-full h-full object-cover grayscale brightness-75 mix-blend-multiply"
                         />
                     </div>

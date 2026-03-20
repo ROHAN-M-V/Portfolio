@@ -15,22 +15,34 @@ function App() {
     window.scrollTo(0, 0);
   }, []);
 
+  // Reset scroll after loader to ensure page starts at top
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo(0, 0);
+    }
+  }, [loading]);
+
   return (
-    <SmoothScroll>
+    <SmoothScroll enabled={!loading}>
       <Cursor />
       {loading && <Loader onComplete={() => setLoading(false)} />}
-      
-      {!loading && (
-        <div className="relative z-10 min-h-screen bg-[#050505] text-[#e0e0e0] font-sans selection:bg-white selection:text-black">
-          <Header />
-          <main>
-            <Hero />
-            <Projects />
-            <About />
-          </main>
-          <Footer />
-        </div>
-      )}
+
+      {/* Always render content — hidden behind loader to avoid mount spike */}
+      <div
+        className="relative z-10 min-h-screen bg-[#050505] text-[#e0e0e0] font-sans selection:bg-white selection:text-black"
+        style={{
+          visibility: loading ? 'hidden' : 'visible',
+          pointerEvents: loading ? 'none' : 'auto',
+        }}
+      >
+        <Header />
+        <main>
+          <Hero />
+          <Projects />
+          <About />
+        </main>
+        <Footer />
+      </div>
     </SmoothScroll>
   );
 }

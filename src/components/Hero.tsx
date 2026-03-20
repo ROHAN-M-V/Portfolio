@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 
 export default function Hero() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -8,8 +8,11 @@ export default function Hero() {
         offset: ['start start', 'end start'],
     });
 
-    const y1 = useTransform(scrollYProgress, [0, 1], [0, 200]);
-    const y2 = useTransform(scrollYProgress, [0, 1], [0, -200]);
+    const isMobile = useMemo(() => window.innerWidth < 768, []);
+    const parallaxAmount = isMobile ? 80 : 200;
+
+    const y1 = useTransform(scrollYProgress, [0, 1], [0, parallaxAmount]);
+    const y2 = useTransform(scrollYProgress, [0, 1], [0, -parallaxAmount]);
     const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
     return (
@@ -18,7 +21,7 @@ export default function Hero() {
             className="relative h-screen w-full flex flex-col justify-center items-center overflow-hidden pt-20"
         >
             <motion.div
-                style={{ y: y1, opacity }}
+                style={{ y: y1, opacity, willChange: 'transform' }}
                 className="w-full px-6 md:px-10 flex flex-col items-start gap-4 z-10"
             >
                 <div className="overflow-hidden">
@@ -26,7 +29,7 @@ export default function Hero() {
                         initial={{ y: "110%", rotate: 5 }}
                         animate={{ y: 0, rotate: 0 }}
                         transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
-                        className="font-display text-[18vw] md:text-[14vw] leading-[0.8] tracking-[-0.04em] uppercase font-bold text-white drop-shadow-2xl"
+                        className="font-display text-[13vw] md:text-[14vw] leading-[0.8] tracking-[-0.04em] uppercase font-bold text-white drop-shadow-2xl"
                     >
                         CREATIVE
                     </motion.h1>
@@ -34,7 +37,7 @@ export default function Hero() {
             </motion.div>
 
             <motion.div
-                style={{ y: y2, opacity }}
+                style={{ y: y2, opacity, willChange: 'transform' }}
                 className="w-full px-6 md:px-10 flex justify-end z-10"
             >
                 <div className="overflow-hidden">
@@ -42,7 +45,7 @@ export default function Hero() {
                         initial={{ y: "110%", rotate: -5 }}
                         animate={{ y: 0, rotate: 0 }}
                         transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.3 }}
-                        className="font-display text-[18vw] md:text-[14vw] leading-[0.8] tracking-[-0.04em] uppercase font-bold text-transparent"
+                        className="font-display text-[13vw] md:text-[14vw] leading-[0.8] tracking-[-0.04em] uppercase font-bold text-transparent"
                         style={{ WebkitTextStroke: "1px rgba(255,255,255,0.8)" }}
                     >
                         DEVELOPER
@@ -79,16 +82,14 @@ export default function Hero() {
                 Crafting digital experiences that merge high aesthetics with robust engineering. Based globally.
             </motion.p>
 
+            {/* Marquee — reduced from 8 to 4 spans */}
             <div className="absolute bottom-0 left-0 w-full overflow-hidden border-t border-zinc-900 bg-[#050505] py-2 md:py-3 z-20">
                 <motion.div
                     className="whitespace-nowrap flex font-alt text-xs md:text-sm tracking-widest uppercase text-zinc-600"
                     animate={{ x: ["0%", "-50%"] }}
                     transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+                    style={{ willChange: 'transform' }}
                 >
-                    <span className="pr-10">OPEN FOR NEW PROJECTS • AVAILABLE WORLDWIDE • </span>
-                    <span className="pr-10">OPEN FOR NEW PROJECTS • AVAILABLE WORLDWIDE • </span>
-                    <span className="pr-10">OPEN FOR NEW PROJECTS • AVAILABLE WORLDWIDE • </span>
-                    <span className="pr-10">OPEN FOR NEW PROJECTS • AVAILABLE WORLDWIDE • </span>
                     <span className="pr-10">OPEN FOR NEW PROJECTS • AVAILABLE WORLDWIDE • </span>
                     <span className="pr-10">OPEN FOR NEW PROJECTS • AVAILABLE WORLDWIDE • </span>
                     <span className="pr-10">OPEN FOR NEW PROJECTS • AVAILABLE WORLDWIDE • </span>
