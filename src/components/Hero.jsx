@@ -74,14 +74,10 @@ export default function Hero() {
                 <span className="hero-name-highlight">VERNEKAR</span>
               </h1>
               <p className="hero-tagline">
-                Building deterministic{' '}
-                <span className="hero-tagline-highlight">systes</span>,Web serives &amp; AI Agents.
+                Building web applications, experimenting with{' '} <span className="hero-tagline-highlight">AI</span>&amp;solving problems with code.
               </p>
               <p className="hero-description">
-                Electronics &amp; Communication Engineering undergrad sophomore  at{' '}
-                <strong style={{ color: 'var(--color-primary)', fontWeight: 600 }}>NIT Goa</strong>.
-                Operating directly at the intersection of transactional ACID pipelines, open-source
-                C++ game runtime engines, and bare-metal ATmega interrupt loops.
+                Electronics & Communication Engineering sophomore at NIT Goa. I build web applications, experiment with AI, and work on projects that bridge software with hardware and embedded systems. Currently learning by building, breaking, and shipping things.
               </p>
             </div>
 
