@@ -75,8 +75,7 @@ export default function Hero() {
               </h1>
               <p className="hero-tagline">
                 Building deterministic{' '}
-                <span className="hero-tagline-highlight">distributed systems</span>, high-concurrency
-                microservices &amp; physical computing hardware.
+                <span className="hero-tagline-highlight">systes</span>,Web serives &amp; AI Agents.
               </p>
               <p className="hero-description">
                 Electronics &amp; Communication Engineering undergrad sophomore  at{' '}
