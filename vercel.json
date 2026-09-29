@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/sih",
+      "destination": "https://www.youtube.com/",
+      "permanent": false
+    }
+  ]
+}
